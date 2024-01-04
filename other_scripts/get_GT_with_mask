@@ -1,0 +1,29 @@
+import cv2
+import os
+import numpy as np
+
+# folder
+root_path = "D:\\nerf_data\\plant_and_book\\"
+source_path = os.path.join(root_path, "input\\")
+mask_path = os.path.join(root_path, "mask\\")
+output_path = os.path.join(root_path, "GT\\")
+
+files = os.listdir(source_path)
+for file_name in files:
+    source_image_path = os.path.join(source_path, file_name)
+    mask_image_path = os.path.join(mask_path, file_name)
+    
+    source_image = cv2.imread(source_image_path)
+    #source_image = cv2.cvtColor(source_image, cv2.COLOR_BGR2RGB)
+    mask_image = cv2.imread(mask_image_path,cv2.IMREAD_GRAYSCALE)
+    #mask_image = cv2.cvtColor(mask_image, cv2.COLOR_BGR2RGB)
+    converted_array = np.zeros_like(mask_image, dtype=np)
+
+    # 创建一个与RGB图像形状相同的全零掩码
+    new_mask = np.zeros_like(source_image)
+
+    # 将灰度图像中像素值为255的部分作为掩码
+    new_mask[mask_image == 255] = 255
+
+    masked_image = cv2.bitwise_and(source_image, new_mask)
+    cv2.imwrite(os.path.join(output_path, file_name),masked_image)
